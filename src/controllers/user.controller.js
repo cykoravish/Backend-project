@@ -95,9 +95,13 @@ const loginUser = asyncHandler(async (req, res) => {
   // access and refresh Token
   // send cookies
   const { email, username, password } = req.body;
-  if (!username && !email) {
-    throw new ApiError(400, "username or password is required");
+  if (!(username || email)) {
+    throw new ApiError(400, "username or email is required");
   }
+  // Here is an alternative of above code
+  // if (!username && !email) {
+  //   throw new ApiError(400, "username or password is required");
+  // }
 
   const user = await User.findOne({
     $or: [{ username }, { email }],
@@ -170,7 +174,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
-  if (incomingRefreshToken) {
+  if (!incomingRefreshToken) {
     throw new ApiError(401, "unauthorized request");
   }
 
